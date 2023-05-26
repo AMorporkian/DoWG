@@ -37,8 +37,8 @@ class DoWG(torch.optim.Optimizer):
                 eta_t = r_t.pow(2) / torch.sqrt(v_t)
 
                 # Gradient descent step
-                with torch.no_grad():
-                    p.add_(d_p, alpha=-eta_t.mean().item())
+                p.requires_grad = True
+                p = p - eta_t.mean().item() * d_p 
 
                 # Update the state
                 state['v_prev'] = v_t
@@ -46,7 +46,8 @@ class DoWG(torch.optim.Optimizer):
 
 class DoWG8bit(DoWG):
     """An 8bit quantized implementation of DoWG."""
-    def __init__(self, params, r_epsilon=1e-8, *args, **kwargs):
+    def __init__(self, params, r_epsilon=1e-20, *args, **kwargs):
+        # This doesn't work very well right now.
         super(DoWG8bit, self).__init__(params, r_epsilon, *args, **kwargs)
         self.params = params
         self.r_epsilon = r_epsilon
