@@ -35,7 +35,8 @@ class DoWG(torch.optim.Optimizer):
 
                 # Update weighted gradient sum
                 v_t = v_prev.addcmul_(r_t.pow(2), torch.norm(d_p).pow(2))
-
+                if not v_t.any(): 
+                    continue # Avoid any division by 0.
                 # Set the stepsize
                 eta_t = r_t.pow(2) / torch.sqrt(v_t)
 
