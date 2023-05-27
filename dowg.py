@@ -6,6 +6,9 @@ class DoWG(torch.optim.Optimizer):
         super(DoWG, self).__init__(params, defaults)
     
     def step(self, closure=None):
+        loss = None
+        if closure is not None:
+            loss = closure()
         for group in self.param_groups:
             for p in group['params']:
                 if p.grad is None:
@@ -43,7 +46,7 @@ class DoWG(torch.optim.Optimizer):
                 # Update the state
                 state['v_prev'] = v_t
                 state['r_prev'] = r_t
-
+        return loss
 class DoWG8bit(DoWG):
     """An 8bit quantized implementation of DoWG."""
     def __init__(self, params, r_epsilon=1e-20, *args, **kwargs):
