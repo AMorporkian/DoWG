@@ -1,8 +1,8 @@
 import torch
 
 class DoWG(torch.optim.Optimizer):
-    def __init__(self, params, r_epsilon=1e-8, *args, **kwargs):
-        defaults = dict(r_epsilon=r_epsilon, lr=0)  # Learning rate isn't used in this algorithm but kept here for compatibility
+    def __init__(self, params, r_epsilon=1e-5, *args, **kwargs):
+        defaults = dict(r_epsilon=r_epsilon, lr=1)  # Learning rate isn't used in this algorithm but kept here for compatibility
         super(DoWG, self).__init__(params, defaults)
     
     def step(self, closure=None):
@@ -31,15 +31,15 @@ class DoWG(torch.optim.Optimizer):
                 r_t = torch.max(torch.norm(p.data - x0), r_prev)
 
                 # Update weighted gradient sum
-                v_t = v_prev + r_t.pow(2) * torch.norm(d_p).pow(2)
+                v_t = v_prev.addcmul_(r_t.pow(2), torch.norm(d_p).pow(2))
 
                 # Set the stepsize
                 eta_t = r_t.pow(2) / torch.sqrt(v_t)
 
                 # Gradient descent step
-                p.requires_grad = True
-                p = p - eta_t.mean().item() * d_p 
-
+                p.data.require_grad = True
+                p.data = p.data.addcmul_(-eta_t, d_p)
+                
                 # Update the state
                 state['v_prev'] = v_t
                 state['r_prev'] = r_t
