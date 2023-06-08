@@ -1,0 +1,11 @@
+LICENSE
+README.md
+pyproject.toml
+src/dowg/CoordinateDoWG.py
+src/dowg/ScalarDoWG.py
+src/dowg/__init__.py
+src/dowg/clip.py
+src/dowg.egg-info/PKG-INFO
+src/dowg.egg-info/SOURCES.txt
+src/dowg.egg-info/dependency_links.txt
+src/dowg.egg-info/top_level.txt
